@@ -1,10 +1,19 @@
 import { createContext, ReactNode, useState, useContext } from "react";
 import { api } from "../services";
+import jwtDecode from "jwt-decode";
 
 type UserCredentials = {
   email: string;
   password: string;
   username?: string;
+};
+
+type UserToken = {
+  id: string;
+  name: string;
+  email: string;
+  iat: number;
+  exp: number;
 };
 
 type AuthContextData = {
@@ -13,6 +22,7 @@ type AuthContextData = {
   signUp(credentials: UserCredentials): Promise<void>;
   tokenLocalStorage(): Promise<void>;
   removeTokenLocalStorage(): Promise<void>;
+  userName: string | null;
   isAuthenticated: boolean;
   userToken: string | null;
   loginError: string | null;
@@ -32,6 +42,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [userToken, setUserToken] = useState<string | null>(null);
   const [loginError, setLoginError] = useState<string | null>(null);
   const [signUpError, setSignUpError] = useState<string | null>(null);
+  const [userName, setUserName] = useState<string | null>(null);
 
   async function tokenLocalStorage() {
     const token = localStorage.getItem("token");
@@ -51,6 +62,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     try {
       const response = await api.post("/users/login", { email, password });
       const { token } = response.data;
+      setUserName(jwtDecode<UserToken>(token).name);
       setUserToken(token);
       setIsAuthenticated(true);
     } catch (e) {
@@ -84,6 +96,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         signUpError,
         tokenLocalStorage,
         removeTokenLocalStorage,
+        userName,
       }}
     >
       {children}
