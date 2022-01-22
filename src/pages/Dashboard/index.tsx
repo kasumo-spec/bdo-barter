@@ -1,7 +1,7 @@
 import { Navigate } from "react-router-dom";
 import { Ships, Profile } from "../../components";
 import { useAuth } from "../../providers";
-import { Container, HabitsContainer, ImageContent } from "./style";
+import { Container, ShipsContainer, ImageContent } from "./style";
 import dashImage from "../../assets/undraw_fitness_stats_sht6.svg";
 
 const Dashboard = () => {
@@ -15,10 +15,10 @@ const Dashboard = () => {
     <>
       <Container>
         <h1>Pessoal Ships List</h1>
-        <HabitsContainer>
+        <ShipsContainer>
           <Profile />
           <Ships />
-        </HabitsContainer>
+        </ShipsContainer>
         <ImageContent>
           <img src={dashImage} alt="dashImage" />
         </ImageContent>

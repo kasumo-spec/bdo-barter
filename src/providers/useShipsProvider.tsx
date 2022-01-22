@@ -8,12 +8,18 @@ import {
 import { api } from "../services";
 import { useAuth } from ".";
 
-type ShipDetails = {
-  id: string;
+export type ShipDetails = {
+  id?: string;
   name: string;
   shipPhoto: string;
   type: "T1" | "T2" | "T3" | "T4" | "T5";
-  itens: Object;
+  itens: {
+    [key: string]: {
+      name: string;
+      value: number;
+      img: string;
+    };
+  };
 };
 
 type ShipContextData = {
@@ -48,7 +54,7 @@ export const ShipProvider = ({ children }: ShipProviderProps) => {
       setShips(response.data);
     }
     getShips();
-  }, [ships, userToken]);
+  }, [userToken]);
 
   async function addShip(ship: ShipDetails) {
     const response = await api.post("/ships/", ship, {

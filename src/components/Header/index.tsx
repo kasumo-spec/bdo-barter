@@ -9,24 +9,7 @@ import Logomark from "../../assets/horizontal_on_white_by_logaster-_1_.svg";
 import { Theme } from "@mui/material";
 import { makeStyles } from "@mui/styles";
 
-const useStyles = makeStyles((theme: Theme) => ({
-  root: {
-    width: "100vw",
-  },
-  image: {
-    width: "150px",
-    height: "55px",
-  },
-  MuiAppBar: {
-    backgroundColor: "var(--backgroundHeader)",
-  },
-  title: {
-    flexGrow: 1,
-  },
-}));
-
 const Header = () => {
-  const classes = useStyles();
   const history = useNavigate();
   const { firstButton, actualLocation, setActualLocation } = useHeader();
   const { signOut, removeTokenLocalStorage, isAuthenticated } = useAuth();
@@ -50,20 +33,13 @@ const Header = () => {
   };
 
   return (
-    <div className={classes.root}>
-      <AppBar position="static" className={classes.MuiAppBar}>
+    <div>
+      <AppBar position="static">
         <Toolbar>
           <a href="/">
-            <img
-              className={classes.image}
-              sizes="155 54"
-              src={Logomark}
-              alt="Logomarca"
-            />
+            <img sizes="155 54" src={Logomark} alt="Logomarca" />
           </a>
-          <Typography variant="h6" className={classes.title}>
-            {" "}
-          </Typography>
+          <Typography variant="h6"> </Typography>
           {isAuthenticated && (
             <>
               <Button onClick={redirectFirst} color="inherit">

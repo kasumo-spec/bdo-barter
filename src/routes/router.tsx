@@ -2,7 +2,7 @@ import { Routes, Route } from "react-router-dom";
 
 import { Header } from "../components";
 
-import { Register, Login, Home } from "../pages";
+import { Register, Login, Home, Dashboard } from "../pages";
 
 const Router = () => {
   return (
@@ -14,6 +14,8 @@ const Router = () => {
         <Route path="/register" element={<Register />} />
 
         <Route path="/login" element={<Login />} />
+
+        <Route path="/dashboard" element={<Dashboard />} />
       </Routes>
     </>
   );

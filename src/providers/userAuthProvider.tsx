@@ -1,4 +1,10 @@
-import { createContext, ReactNode, useState, useContext } from "react";
+import {
+  createContext,
+  ReactNode,
+  useState,
+  useContext,
+  useEffect,
+} from "react";
 import { api } from "../services";
 import jwtDecode from "jwt-decode";
 
@@ -20,8 +26,8 @@ type AuthContextData = {
   signIn(credentials: UserCredentials): Promise<void>;
   signOut(): void;
   signUp(credentials: UserCredentials): Promise<void>;
-  tokenLocalStorage(): Promise<void>;
   removeTokenLocalStorage(): Promise<void>;
+  userId: string | null;
   userName: string | null;
   isAuthenticated: boolean;
   userToken: string | null;
@@ -43,16 +49,24 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [loginError, setLoginError] = useState<string | null>(null);
   const [signUpError, setSignUpError] = useState<string | null>(null);
   const [userName, setUserName] = useState<string | null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
 
-  async function tokenLocalStorage() {
-    const token = localStorage.getItem("token");
-    if (token) {
-      setUserToken(token);
-      setIsAuthenticated(true);
+  useEffect(() => {
+    async function tokenLocalStorage() {
+      const token = localStorage.getItem("token");
+      if (token) {
+        setUserName(jwtDecode<UserToken>(token).name);
+        setUserId(jwtDecode<UserToken>(token).id);
+        setUserToken(token);
+        setIsAuthenticated(true);
+      }
     }
-  }
+    tokenLocalStorage();
+  }, []);
 
   async function removeTokenLocalStorage() {
+    setUserName(null);
+    setUserId(null);
     localStorage.clear();
     setUserToken(null);
     setIsAuthenticated(false);
@@ -62,7 +76,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     try {
       const response = await api.post("/users/login", { email, password });
       const { token } = response.data;
+      localStorage.setItem("token", token);
       setUserName(jwtDecode<UserToken>(token).name);
+      setUserId(jwtDecode<UserToken>(token).id);
       setUserToken(token);
       setIsAuthenticated(true);
     } catch (e) {
@@ -94,7 +110,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         userToken,
         loginError,
         signUpError,
-        tokenLocalStorage,
+        userId,
         removeTokenLocalStorage,
         userName,
       }}

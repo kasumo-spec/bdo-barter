@@ -1,66 +1,64 @@
-import { makeStyles, ThemeProvider } from "@mui/styles";
-import { createTheme } from "@mui/material/styles";
 import {
   Accordion,
   AccordionSummary,
   AccordionDetails,
   Typography,
-  Theme,
 } from "@mui/material";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import RenderButton from "../Button";
+import { RenderButton } from "../../components";
 import { toast } from "react-toastify";
 import { ShipsModalEdit } from "./Popup";
 import { ButtonDiv } from "./style";
+import { useUserShips, useShips } from "../../providers";
+import { UserShipsDetails } from "../../providers/useUserShipsProvider";
+import { DataGrid } from "@mui/x-data-grid";
 
-const useStyles = makeStyles((theme: Theme) => ({
-  root: {
-    width: "95%",
-    paddingRight: "12px",
-    margin: "auto",
-  },
-  heading: {
-    fontSize: theme.typography.pxToRem(15),
-    fontWeight: theme.typography.fontWeightRegular,
-  },
-}));
-
-const accordionTheme = createTheme({
-  components: {
-    MuiAccordionDetails: {
-      styleOverrides: {
-        root: {
-          display: "block",
-        },
-      },
-    },
-  },
-});
+type itensCalculate = {
+  [key: string]: number | string | undefined;
+};
 
 const Ships = () => {
-  const classes = useStyles();
-  const { token } = useToken();
+  const { userShips, deleteUserShip } = useUserShips();
+  const { ships } = useShips();
 
-  const deleteShip = (ship) => {
-    api
-      .delete(`/ships/${ship.id}/`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-      .then(() => {
-        toast.success("Hábito deletado com sucesso");
-        setShips(ships.filter((hab) => hab.id !== ship.id));
-      })
-      .catch((_) => toast.error("Erro ao deletar hábito"));
+  const deleteShip = (ship: UserShipsDetails) => {
+    try {
+      deleteUserShip(ship);
+      toast.success("Ship deleted");
+    } catch (error) {
+      toast.error("Error deleting ship");
+    }
   };
 
   return (
     <>
-      <div className="Dashboard-ships">
-        <div className={classes.root}>
-          {ships.length !== 0 ? (
-            ships.map((ship) => {
+      <div>
+        <div>
+          {userShips.length !== 0 ? (
+            userShips.map((ship) => {
+              const shipFullDetails = ships.find(
+                (shiper) => shiper.id === ship.shipId
+              );
+              const itensCalculate: itensCalculate[] = [];
+              Object.keys(ship.shipUserItens).forEach((key) => {
+                const value = shipFullDetails?.itens[key].value
+                  ? shipFullDetails.itens[key].value
+                  : 0;
+                const calc = value - ship.shipUserItens[key];
+                const percent = Math.round(
+                  (ship.shipUserItens[key] / value) * 100
+                );
+
+                itensCalculate.push({
+                  id: key + ship.userId,
+                  itemName: shipFullDetails?.itens[key].name,
+                  value,
+                  calc,
+                  percent,
+                  myQtd: ship.shipUserItens[key],
+                });
+              });
+
               return (
                 <Accordion key={ship.id}>
                   <AccordionSummary
@@ -68,38 +66,47 @@ const Ships = () => {
                     aria-controls={`panel${ship.id}a-content`}
                     id={`panel${ship.id}a-header`}
                   >
-                    <Typography className={classes.heading}>
-                      {ship.title}
-                    </Typography>
+                    <Typography>{shipFullDetails?.name}</Typography>
                   </AccordionSummary>
-                  <ThemeProvider theme={accordionTheme}>
-                    <AccordionDetails>
-                      <Typography>Categoria: {ship.category}</Typography>
-                      <Typography>Dificuldade: {ship.difficulty}</Typography>
-                      <Typography>Frequência: {ship.frequency}</Typography>
-                      <Typography>
-                        Conquistado:{" "}
-                        {ship.how_much_achieved !== 100
-                          ? `${ship.how_much_achieved}%`
-                          : "Completado!"}
-                      </Typography>
-                      <ButtonDiv>
-                        <ShipsModalEdit ship={ship} action="editShip" />{" "}
-                        <RenderButton
-                          click={() => deleteShip(ship)}
-                          action="deleteShip"
-                        />
-                      </ButtonDiv>
-                    </AccordionDetails>
-                  </ThemeProvider>
+                  <AccordionDetails>
+                    <DataGrid
+                      columns={[
+                        {
+                          headerName: "Item",
+                          field: "itemName",
+                        },
+                        {
+                          headerName: "Quantidade Necessária",
+                          field: "value",
+                        },
+                        {
+                          headerName: "Quantidade em Posse",
+                          field: "myQtd",
+                        },
+                        {
+                          headerName: "Quantidade que Falta",
+                          field: "calc",
+                        },
+                        {
+                          headerName: "Porcentagem de Completo",
+                          field: "percent",
+                        },
+                      ]}
+                      rows={itensCalculate}
+                    />
+                    <ButtonDiv>
+                      <ShipsModalEdit ship={ship} action="editShip" />{" "}
+                      <RenderButton
+                        click={() => deleteShip(ship)}
+                        action="deleteShip"
+                      />
+                    </ButtonDiv>
+                  </AccordionDetails>
                 </Accordion>
               );
             })
           ) : (
-            <Typography>
-              Você não tem nenhum hábito cadastrado. Clique no botão para
-              cadastrar.
-            </Typography>
+            <Typography>Você não tem Navios Registrados.</Typography>
           )}
         </div>
       </div>
