@@ -6,7 +6,7 @@ import { makeStyles } from "@mui/styles";
 import * as yup from "yup";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import BackImage from "../../assets/register_img.svg";
+import BackImage from "../../assets/undraw_click_here_re_y6uq.png";
 import { ImageDiv } from "../Login/style";
 import {
   RegisterButton,

@@ -8,12 +8,16 @@ export default createGlobalStyle`
         outline: 0;
     }
 
+    html {
+      font-size: 16px;
+    }
+
     :root {
-        --backgroundHomePage: #D6B1B1;
+        --backgroundHomePage: #000324;
         --backgroundRegister: #DCE4ED;
         --backgroundLogin: #B2ACFA;
         --backgroundDashboard: #c2d6e8;
-        --backgroundHeader: #A3848D;
+        --backgroundHeader: #000000;
         --backgroundProfile: #ebe6f1;
         --backgroundButton: #ffffff;
         --borderButton: #6b6af5;
@@ -23,6 +27,7 @@ export default createGlobalStyle`
         --backgroundInputPopUp: #ffffff;
         --backgroundGroupPage: #E9A2AD;
         --backgroundInfoGroups: #C4C4C4;
+
     }
 
     button {
@@ -34,7 +39,7 @@ export default createGlobalStyle`
     }
 
     body {
-        font-family: 'Roboto', sans-serif;
+        font-family: 'Roboto Condensed', sans-serif;
     }
 
     .App-header {
@@ -45,17 +50,6 @@ export default createGlobalStyle`
       width: 100%;
       margin-top: 32px;
 
-    }
-
-    .Dashboard-habits {
-      flex-grow: 12;
-      justify-content: center;
-      padding-left: 12px;
-    }
-    
-    .Modal-buttons-habits {
-      display: flex;
-      justify-content: space-around;
     }
 
     @media (min-width: 600px){

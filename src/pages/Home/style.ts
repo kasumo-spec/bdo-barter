@@ -3,12 +3,10 @@ import { Button } from "@mui/material";
 
 export const Container = styled.div`
   background-color: var(--backgroundHomePage);
-  width: 100vw;
+  width: 100%;
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 56px);
-  padding: 10px;
-  width: 100vw;
+  height: calc(100vh - 100px);
 
   .yoga {
     display: none;
@@ -28,13 +26,13 @@ export const Container = styled.div`
     font-size: 1.5rem;
     margin: auto;
     padding: 0px 0 50px 10px;
+    color: wheat;
   }
 
   @media (min-width: 700px) {
     justify-content: space-evenly;
     align-items: center;
     flex-direction: row;
-    height: calc(100vh - 65px);
 
     .yoga {
       display: initial;
@@ -96,5 +94,5 @@ export const RegisterButton = styled(LoginButton)`
 export const Apresentation = styled.div`
   display: flex;
   flex-direction: column;
-  height: 534px;
+  height: 754px;
 `;

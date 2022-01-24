@@ -12,7 +12,7 @@ import {
   StyledTextField,
   StyledButton,
 } from "./style";
-import Image from "../../assets/undraw_Walking_outside_re_56xo.svg";
+import Image from "../../assets/undraw_authentication_re_svpt.svg";
 import { toast } from "react-toastify";
 import { useHeader, useAuth } from "../../providers";
 

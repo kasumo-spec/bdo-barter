@@ -8,7 +8,14 @@ const Profile = () => {
 
   return (
     <>
-      <div>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+          padding: "10px",
+        }}
+      >
         <Avatar alt="Avatar">
           <AccountCircleIcon />
         </Avatar>

@@ -6,8 +6,6 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { useAuth, useHeader } from "../../providers";
 import Logomark from "../../assets/horizontal_on_white_by_logaster-_1_.svg";
-import { Theme } from "@mui/material";
-import { makeStyles } from "@mui/styles";
 
 const Header = () => {
   const history = useNavigate();
@@ -34,46 +32,62 @@ const Header = () => {
 
   return (
     <div>
-      <AppBar position="static">
-        <Toolbar>
-          <a href="/">
-            <img sizes="155 54" src={Logomark} alt="Logomarca" />
+      <AppBar
+        position="static"
+        sx={{
+          backgroundColor: "var(--backgroundHeader)",
+          height: "6,25rem",
+        }}
+      >
+        <Toolbar
+          sx={{
+            justifyContent: "space-between",
+          }}
+        >
+          <a style={{ height: "5,625rem" }} href="/">
+            <img style={{ height: "5rem" }} src={Logomark} alt="Logomarca" />
           </a>
           <Typography variant="h6"> </Typography>
-          {isAuthenticated && (
-            <>
-              <Button onClick={redirectFirst} color="inherit">
-                {actualLocation === "/dashboard"
-                  ? "Grupos"
-                  : actualLocation === "/groups"
-                  ? "Hábitos"
-                  : "Grupos"}
-              </Button>
-            </>
-          )}
 
           {isAuthenticated ? (
-            <Button onClick={handleLogout} color="inherit">
-              Logout
-            </Button>
+            <div>
+              <Button onClick={redirectFirst} color="inherit">
+                Navios
+              </Button>
+              <Button onClick={handleLogout} color="inherit">
+                Logout
+              </Button>
+            </div>
           ) : actualLocation === "/login" ? (
-            <>
+            <div>
               <Button onClick={() => handlePath("/")} color="inherit">
                 Home
               </Button>
               <Button onClick={() => handlePath("/register")} color="inherit">
                 Register
               </Button>
-            </>
-          ) : (
-            <>
+            </div>
+          ) : actualLocation === "/register" ? (
+            <div>
               <Button onClick={() => handlePath("/")} color="inherit">
                 Home
               </Button>
               <Button onClick={() => handlePath("/login")} color="inherit">
                 Login
               </Button>
-            </>
+            </div>
+          ) : (
+            <div>
+              <Button onClick={() => handlePath("/")} color="inherit">
+                Home
+              </Button>
+              <Button onClick={() => handlePath("/login")} color="inherit">
+                Login
+              </Button>
+              <Button onClick={() => handlePath("/register")} color="inherit">
+                Registre-se
+              </Button>
+            </div>
           )}
         </Toolbar>
       </AppBar>

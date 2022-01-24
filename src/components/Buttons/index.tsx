@@ -51,10 +51,10 @@ const MappButtonIcon = withStyles((theme: Theme) => ({
 }))(Button);
 
 const RenderButton = ({ action, click }: RenderButtonProps) => {
-  if (action === "addHabitPopup") {
+  if (action === "addShipPopup") {
     return (
       <MappButton onClick={click} variant="contained">
-        Adicionar Hábito
+        Adicionar Navio
       </MappButton>
     );
   } else if (action === "confirmButton") {
@@ -63,7 +63,7 @@ const RenderButton = ({ action, click }: RenderButtonProps) => {
         Confirmar
       </MappButton>
     );
-  } else if (action === "editHabit") {
+  } else if (action === "editShip") {
     return (
       <MappButtonIcon onClick={click} variant="contained">
         <CreateIcon />
