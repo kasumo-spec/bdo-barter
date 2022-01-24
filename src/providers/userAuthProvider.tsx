@@ -5,21 +5,20 @@ import {
   useContext,
   useEffect,
 } from "react";
-import { api } from "../services";
-import jwtDecode from "jwt-decode";
+import { auth } from "../services";
+import {
+  createUserWithEmailAndPassword,
+  sendEmailVerification,
+  updateProfile,
+  signInWithEmailAndPassword,
+  onAuthStateChanged,
+  signOut as signOutAuth,
+} from "firebase/auth";
 
 type UserCredentials = {
   email: string;
   password: string;
   username?: string;
-};
-
-type UserToken = {
-  id: string;
-  name: string;
-  email: string;
-  iat: number;
-  exp: number;
 };
 
 type AuthContextData = {
@@ -52,11 +51,20 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [userId, setUserId] = useState<string | null>(null);
 
   useEffect(() => {
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        setIsAuthenticated(true);
+        setUserId(user.uid);
+        setUserName(user.displayName);
+      } else {
+        setIsAuthenticated(false);
+        setUserId(null);
+        setUserName(null);
+      }
+    });
     async function tokenLocalStorage() {
       const token = localStorage.getItem("token");
       if (token) {
-        setUserName(jwtDecode<UserToken>(token).name);
-        setUserId(jwtDecode<UserToken>(token).id);
         setUserToken(token);
         setIsAuthenticated(true);
       }
@@ -74,11 +82,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   async function signIn({ email, password }: UserCredentials) {
     try {
-      const response = await api.post("/users/login", { email, password });
-      const { token } = response.data;
+      const { user } = await signInWithEmailAndPassword(auth, email, password);
+      const token = await user.getIdToken();
       localStorage.setItem("token", token);
-      setUserName(jwtDecode<UserToken>(token).name);
-      setUserId(jwtDecode<UserToken>(token).id);
+      setUserName(user.displayName);
+      setUserId(user.uid);
       setUserToken(token);
       setIsAuthenticated(true);
     } catch (e) {
@@ -88,7 +96,13 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
   async function signUp({ username, email, password }: UserCredentials) {
     try {
-      await api.post("/signup", { username, email, password });
+      const { user } = await createUserWithEmailAndPassword(
+        auth,
+        email,
+        password
+      );
+      await sendEmailVerification(user);
+      await updateProfile(user, { displayName: username });
       setSignUpError(null);
     } catch (e) {
       setSignUpError("Usuário já existe");
@@ -96,6 +110,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   }
 
   async function signOut() {
+    signOutAuth(auth);
+    localStorage.clear();
     setUserToken(null);
     setIsAuthenticated(false);
   }

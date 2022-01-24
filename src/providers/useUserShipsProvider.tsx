@@ -5,8 +5,16 @@ import {
   useContext,
   useEffect,
 } from "react";
-import { api } from "../services";
+import { firestore } from "../services";
 import { useAuth } from ".";
+import {
+  collection,
+  getDocs,
+  addDoc,
+  doc,
+  deleteDoc,
+  updateDoc,
+} from "firebase/firestore";
 
 export type UserShipsDetails = {
   id?: string;
@@ -34,53 +42,46 @@ export const UserShipsContext = createContext<UserShipsContextData>(
 );
 
 export const UserShipsProvider = ({ children }: UserShipsProviderProps) => {
-  const { userId, userToken } = useAuth();
+  const { userId } = useAuth();
   const [userShips, setUserShips] = useState<UserShipsDetails[]>([]);
 
   useEffect(() => {
     async function getUserShips() {
-      const response = await api.get(
-        `/user-ships/?filter[where][userId]=${userId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${userToken}`,
-          },
-        }
+      const userShipsCollection = collection(firestore, "userShips");
+      const results = await getDocs(userShipsCollection);
+      const result: UserShipsDetails[] = [];
+      results.forEach((userShip: any) => {
+        result.push({
+          id: userShip.id,
+          userId: userShip.userId,
+          shipId: userShip.shipId,
+          shipUserItens: userShip.shipUserItens,
+        });
+      });
+      const shipUser = result.find(
+        (userShip: UserShipsDetails) => userShip.userId === userId
       );
-
-      setUserShips(response.data);
+      if (shipUser) {
+        setUserShips(result);
+      }
     }
     getUserShips();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [userId]);
 
   async function addUserShip(userShip: UserShipsDetails) {
-    const response = await api.post("/user-ships/", userShip, {
-      headers: {
-        Authorization: `Bearer ${userToken}`,
-      },
-    });
-
-    setUserShips([...userShips, response.data]);
+    const userShipsCollection = collection(firestore, "userShips");
+    await addDoc(userShipsCollection, userShip);
+    setUserShips([...userShips, userShip]);
   }
 
   async function deleteUserShip(userShip: UserShipsDetails) {
-    await api.delete(`/user-ships/${userShip.id}`, {
-      headers: {
-        Authorization: `Bearer ${userToken}`,
-      },
-    });
-
+    await deleteDoc(doc(firestore, `userShips/${userShip.id}`));
     setUserShips(userShips.filter((ship) => ship.id !== userShip.id));
   }
 
   async function editUserShip(userShip: UserShipsDetails) {
-    await api.put(`/user-ships/${userShip.id}`, userShip, {
-      headers: {
-        Authorization: `Bearer ${userToken}`,
-      },
-    });
-
+    await updateDoc(doc(firestore, `userShips/${userShip.id}`), userShip);
     setUserShips(userShips.filter((ship) => ship.id !== userShip.id));
   }
 

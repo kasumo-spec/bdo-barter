@@ -5,7 +5,16 @@ import {
   useContext,
   useEffect,
 } from "react";
-import { api } from "../services";
+import { firestore } from "../services";
+import {
+  collection,
+  getDocs,
+  addDoc,
+  doc,
+  deleteDoc,
+  updateDoc,
+  query,
+} from "firebase/firestore";
 import { useAuth } from ".";
 
 export type ShipDetails = {
@@ -44,45 +53,34 @@ export const ShipProvider = ({ children }: ShipProviderProps) => {
   const [ships, setShips] = useState<ShipDetails[]>([]);
 
   useEffect(() => {
-    async function getShips() {
-      const response = await api.get("/ships/", {
-        headers: {
-          Authorization: `Bearer ${userToken}`,
-        },
+    async function loadShips() {
+      const q = query(collection(firestore, "ships"));
+      const snapshot = await getDocs(q);
+      const result: ShipDetails[] = [];
+      snapshot.forEach((ship: any) => {
+        result.push({
+          id: ship.id,
+          ...ship.data(),
+        });
       });
-
-      setShips(response.data);
+      setShips(result);
     }
-    getShips();
+    loadShips();
   }, [userToken]);
 
   async function addShip(ship: ShipDetails) {
-    const response = await api.post("/ships/", ship, {
-      headers: {
-        Authorization: `Bearer ${userToken}`,
-      },
-    });
-
-    setShips([...ships, response.data]);
+    const shipsCollection = collection(firestore, "ships");
+    await addDoc(shipsCollection, ship);
+    setShips([...ships, ship]);
   }
 
   async function deleteShip(ship: ShipDetails) {
-    await api.delete(`/ships/${ship.id}/`, {
-      headers: {
-        Authorization: `Bearer ${userToken}`,
-      },
-    });
-
+    await deleteDoc(doc(firestore, `ships/${ship.id}`));
     setShips(ships.filter((s) => s.id !== ship.id));
   }
 
   async function editShip(ship: ShipDetails) {
-    await api.put(`/ships/${ship.id}/`, ship, {
-      headers: {
-        Authorization: `Bearer ${userToken}`,
-      },
-    });
-
+    await updateDoc(doc(firestore, `ships/${ship.id}`), ship);
     setShips(ships.map((s) => (s.id === ship.id ? ship : s)));
   }
 

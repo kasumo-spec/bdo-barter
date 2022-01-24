@@ -1,3 +1,3 @@
-import { api } from "./axios";
+import { firestore, auth } from "./firebase";
 
-export { api };
+export { firestore, auth };
