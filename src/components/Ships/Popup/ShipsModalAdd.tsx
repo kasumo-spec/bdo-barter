@@ -1,7 +1,6 @@
 import { useState } from "react";
 import {
   Modal,
-  Backdrop,
   Fade,
   Container,
   Card,
@@ -69,17 +68,21 @@ export default function HabitsModal({ action }: { action: string }) {
           open={open}
           onClose={handleClose}
           closeAfterTransition
-          BackdropComponent={Backdrop}
-          BackdropProps={{
-            timeout: 500,
-          }}
         >
           <Fade in={open}>
             <div>
-              <Container maxWidth={"md"}>
+              <Container
+                maxWidth={"md"}
+                sx={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                  marginTop: "1rem",
+                }}
+              >
                 {ships.map((ship) => {
                   return (
-                    <Card key={ship.id}>
+                    <Card key={ship.id} variant="outlined">
                       <CardContent>
                         <Typography>{ship.name}</Typography>
                         <CardMedia
@@ -87,6 +90,7 @@ export default function HabitsModal({ action }: { action: string }) {
                           alt={ship.name}
                           height="140"
                           image={ship.shipPhoto}
+                          style={{ objectFit: "contain" }}
                         />
                       </CardContent>
                       <CardActions>

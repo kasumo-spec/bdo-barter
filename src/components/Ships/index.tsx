@@ -40,27 +40,31 @@ const Ships = () => {
                 (shiper) => shiper.id === ship.shipId
               );
               const itensCalculate: itensCalculate[] = [];
-              Object.keys(ship.shipUserItens).forEach((key) => {
-                const value = shipFullDetails?.itens[key].value
-                  ? shipFullDetails.itens[key].value
+              for (let [key, value] of Object.entries(ship.shipUserItens)) {
+                const valor = shipFullDetails?.itens[key].qtd
+                  ? shipFullDetails.itens[key].qtd
                   : 0;
-                const calc = value - ship.shipUserItens[key];
-                const percent = Math.round(
-                  (ship.shipUserItens[key] / value) * 100
-                );
+                const calc = valor - value;
+                const percent = Math.round((value / valor) * 100);
 
                 itensCalculate.push({
                   id: key + ship.userId,
                   itemName: shipFullDetails?.itens[key].name,
-                  value,
+                  value: valor,
                   calc,
                   percent,
-                  myQtd: ship.shipUserItens[key],
+                  myQtd: value,
                 });
-              });
+              }
 
               return (
-                <Accordion key={ship.id}>
+                <Accordion
+                  key={ship.id}
+                  sx={{
+                    width: "100%",
+                    marginBottom: "1rem",
+                  }}
+                >
                   <AccordionSummary
                     expandIcon={<ExpandMoreIcon />}
                     aria-controls={`panel${ship.id}a-content`}
@@ -74,25 +78,31 @@ const Ships = () => {
                         {
                           headerName: "Item",
                           field: "itemName",
+                          flex: 3,
                         },
                         {
                           headerName: "Quantidade Necessária",
                           field: "value",
+                          flex: 1,
                         },
                         {
                           headerName: "Quantidade em Posse",
                           field: "myQtd",
+                          flex: 1,
                         },
                         {
                           headerName: "Quantidade que Falta",
                           field: "calc",
+                          flex: 1,
                         },
                         {
                           headerName: "Porcentagem de Completo",
                           field: "percent",
+                          flex: 1,
                         },
                       ]}
                       rows={itensCalculate}
+                      autoHeight
                     />
                     <ButtonDiv>
                       <ShipsModalEdit ship={ship} action="editShip" />{" "}

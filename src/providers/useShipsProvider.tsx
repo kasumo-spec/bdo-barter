@@ -25,7 +25,7 @@ export type ShipDetails = {
   itens: {
     [key: string]: {
       name: string;
-      value: number;
+      qtd: number;
       img: string;
     };
   };

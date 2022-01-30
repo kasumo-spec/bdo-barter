@@ -1,10 +1,7 @@
 import { FormEvent, useState } from "react";
-import { makeStyles } from "@mui/styles";
 import {
   Modal,
-  Backdrop,
   Fade,
-  Theme,
   Container,
   Avatar,
   Typography,
@@ -16,7 +13,7 @@ import {
 import { RenderButton } from "../../../components";
 import { toast } from "react-toastify";
 import { UserShipsDetails } from "../../../providers/useUserShipsProvider";
-import { useAuth, useUserShips, useShips } from "../../../providers";
+import { useUserShips, useShips } from "../../../providers";
 
 export default function HabitsModalEdit({
   action,
@@ -26,32 +23,27 @@ export default function HabitsModalEdit({
   ship: UserShipsDetails;
 }) {
   const [open, setOpen] = useState(false);
-  const { userId } = useAuth();
   const { editUserShip } = useUserShips();
   const { ships } = useShips();
   const thisShip = ships.find((shiper) => shiper.id === ship.shipId);
+  const [shipItens, setShipItens] = useState(ship.shipUserItens);
 
-  const editHabit = (values: UserShipsDetails) => {};
+  const modifyShipItens = ({ value, id }: any) => {
+    setShipItens({ ...shipItens, [id]: Number(value) });
+  };
 
   const onSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    const shipUserItens: {
-      [key: string]: number;
-    } = {};
-    const source = data.get("shipUserItens");
-    console.log(source);
-    // source?.forEach((item) => {
-    //   shipUserItens[item.name] = item.value;
-    // });
-    // const values = {
-    //   id: ship.id,
-    //   userId,
-    //   shipId: ship.shipId,
-    //   shipUserItens: shipUserItens,
-    // };
-    // editHabit(values);
-    handleClose();
+    try {
+      event.preventDefault();
+      editUserShip({
+        ...ship,
+        shipUserItens: shipItens,
+      });
+      handleClose();
+      toast.success("Ship updated successfully");
+    } catch (error) {
+      toast.error("Ship not updated");
+    }
   };
 
   const handleOpen = () => {
@@ -71,14 +63,13 @@ export default function HabitsModalEdit({
         open={open}
         onClose={handleClose}
         closeAfterTransition
-        BackdropComponent={Backdrop}
-        BackdropProps={{
-          timeout: 500,
-        }}
       >
         <Fade in={open}>
           <div>
-            <Container maxWidth="sm">
+            <Container
+              maxWidth="sm"
+              sx={{ backgroundColor: "white", marginTop: "1rem" }}
+            >
               <Avatar>
                 <img src={thisShip?.shipPhoto} alt="Avatar of the Ship" />
               </Avatar>
@@ -91,12 +82,21 @@ export default function HabitsModalEdit({
                     return (
                       <Grid item xs={12} key={item}>
                         <TextField
-                          name="shipUserItens"
-                          label={item}
+                          id={item}
+                          name={item}
+                          label={
+                            thisShip?.itens[item].name
+                              ? thisShip.itens[item].name
+                              : item
+                          }
+                          onChange={({ target }) => {
+                            modifyShipItens({
+                              value: (target as HTMLInputElement).value,
+                              id: item,
+                            });
+                          }}
                           type="number"
-                          value={ship.shipUserItens[item]}
                           fullWidth
-                          variant="outlined"
                         />
                       </Grid>
                     );
