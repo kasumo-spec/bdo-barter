@@ -68,7 +68,7 @@ const Login = () => {
             <StyledTextField
               required
               variant="outlined"
-              label="Nome"
+              label="E-mail"
               margin="normal"
               size="small"
               color="primary"
@@ -85,6 +85,7 @@ const Login = () => {
               label="Senha"
               margin="normal"
               size="small"
+              type="password"
               color="primary"
               {...register("password")}
               error={!!errors.password}
